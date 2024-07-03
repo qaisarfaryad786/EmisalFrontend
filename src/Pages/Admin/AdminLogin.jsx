@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { adminLogin, reset } from '../../redux/auth/authSlice';
 import logo from './../../assets/logo.png';
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ const AdminLogin = () => {
     password: "",
   });
 
+  
   const [serverErrorMessage, setServerErrorMessage] = useState("");
 
   const { username, password } = formData;
@@ -18,27 +21,31 @@ const AdminLogin = () => {
   const dispatch = useDispatch();
 
   const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
-
+  
   useEffect(() => {
     
     if (isError) {
       // alert(message);
-      setServerErrorMessage(message);
-    }else{
-      setServerErrorMessage("");
+      toast.error(message);
+      dispatch(reset());
     }
 
-    if (isSuccess) {
-      navigate('/');
+   
+      if (isSuccess) {
+        toast.success("Login successful!");
+        navigate('/');
+        dispatch(reset());
     }
+    
 
     if (isLoading) {
       return "Loading...";
     }
 
-  }, [user, isError, isSuccess, navigate, message, dispatch]);
+  }, [user, isError, isSuccess,  message, dispatch]);
 
  
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -87,6 +94,7 @@ const AdminLogin = () => {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };
