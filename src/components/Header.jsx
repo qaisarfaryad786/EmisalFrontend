@@ -20,14 +20,14 @@ const Header = () => {
   };
   return (
     <div>
-      <div className="h-20 flex justify-between items-center bg-[#2F3645]">
+      <div className="h-20 flex justify-between items-center bg-[#000000]">
         <img src={logo} className="h-auto w-[150px] ml-20" alt="" />
         <div className="flex gap-2 justify-center items-center mr-20">
           <div className="relative font-[sans-serif] w-max mx-auto">
             <button
               type="button"
               onClick={toggleDropdown}
-              className="px-4 py-2 flex items-center rounded-sm text-[#333] text-sm border border-gray-300 outline-none"
+              className="px-4 py-2 flex items-center rounded-sm text-[#333] text-sm border-b"
             >
               <img
                 src="https://readymadeui.com/profile_6.webp"
@@ -48,8 +48,8 @@ const Header = () => {
               </svg>
             </button>
             {isOpen && (
-              <ul className="absolute shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded-lg max-h-96 overflow-auto">
-                <li className="py-2.5 px-5 flex items-center hover:bg-gray-100 text-[#333] text-sm cursor-pointer">
+              <ul className="absolute shadow-lg bg-white py-1 z-[1000] min-w-full w-max rounded-sm max-h-96 overflow-auto">
+                <li className="py-2.5 px-5 flex items-center hover:bg-gray-200 text-[#333] text-sm cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"

@@ -1,74 +1,69 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getUsers, reset } from '../redux/user/userSlice';
-import { useTable, useSortBy } from 'react-table';
+import { getUsers } from '../redux/user/userSlice';
+import { useTable, useSortBy, usePagination } from 'react-table';
 import Header from '../components/Header';
 import { logout } from '../utils/logout';
 import Spinner from '../components/Spinner';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-
-
-const columns = [
-  {
-    Header: "Sr",
-    accessor: 'Sr' // Ensure this matches the data key
-  },
-  {
-    Header: "Name",
-    accessor: "name"
-  },
-  {
-    Header: "Username",
-    accessor: "username"
-  },
-  {
-    Header: "IsActive",
-    accessor: "isActive" // Ensure this matches the data key
-  },
-  {
-    Header:"Action",
-    Cell: ({ row }) => (
-      <div className="flex space-x-2">
-        <FaEdit 
-          className="text-blue-500 cursor-pointer hover:text-blue-700"
-          onClick={() => handleEdit(row.original)}
-        />
-        <FaTrashAlt
-          className="text-red-500 cursor-pointer hover:text-red-700"
-          onClick={() => handleDelete(row.original)}
-        />
-      </div>
-    )
-  }
-    
-
-];
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   
-  const { users, isLoading, isError, message,status } = useSelector((state) => state.user);
-  
+  const { users, isLoading, isError } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getUsers());
-    return () => {
-      dispatch(reset());
-    }
   }, [dispatch]);
 
+  const columns = useMemo(() => [
+    {
+      Header: "Sr",
+      accessor: 'Sr' // Ensure this matches the data key
+    },
+    {
+      Header: "Name",
+      accessor: "name"
+    },
+    {
+      Header: "Username",
+      accessor: "username"
+    },
+    {
+      Header: "IsActive",
+      accessor: "isActive" // Ensure this matches the data key
+    },
+    {
+      Header: "Action",
+    }
+  ], []);
 
-  const data = users ? users.map((user, index) => ({
+  const data = useMemo(() => users ? users.map((user, index) => ({
     Sr: index + 1, // Adding a serial number
     name: user.name,
     username: user.username,
     isActive: user.isActive ? 'Yes' : 'No' // Assuming isActive is a boolean
-  })) : [];
+  })) : [], [users]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data
-  },  
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page, // Instead of using rows, we'll use page
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize }
+  } = useTable(
+    { columns, data, initialState: { pageIndex: 0 } },
+    useSortBy,
+    usePagination
   );
 
   if (isLoading) {
@@ -77,30 +72,60 @@ const Dashboard = () => {
   if (isError) {
     logout();
   }
-  
+
+  const startRow = pageIndex * pageSize + 1;
+  const endRow = Math.min((pageIndex + 1) * pageSize, data.length);
 
   return (
     <>
       <Header />
       {isError && (
           <div>Session Expire, Please Login Again</div>
-        )}
-      {/* table */}
-      <div className='container mx-auto flex items-center justify-center my-7'>
-        <table {...getTableProps()} className="table-auto w-3/4 shadow-lg">
-          <thead className="bg-[#2F3645]">
-            {headerGroups.map((hg) => (
-              <tr {...hg.getHeaderGroupProps()}>
-                {hg.headers.map((header) => (
-                  <th {...header.getHeaderProps()} className="px-4 py-2 text-left text-sm font-medium text-gray-200  border border-gray-200">
-                    {header.render("Header")}
+      )}
+      <div className='container mx-auto w-9/12'>
+        <div className=" my-4 shadow-lg ">
+          <div>
+            <select
+              value={pageSize}
+              onChange={e => {
+                setPageSize(Number(e.target.value));
+              }}
+              className="p-1 border border-gray-300 rounded"
+            >
+              {[10, 20, 30, 40, 50].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
+        <table {...getTableProps()} className="table-auto w-full shadow-lg mt-2 rounded-sm">
+          <thead className="bg-[#454545] text-center">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-4 py-2 t text-sm font-medium text-gray-200 border border-black text-center">
+                    <div className="flex items-center">
+                      {column.render("Header")}
+                      <span className="ml-2">
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <FaSortDown />
+                          ) : (
+                            <FaSortUp />
+                          )
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
           <tbody {...getTableBodyProps()} className="">
-            {rows.map((row) => {
+            {page.map((row) => {
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()} className="hover:bg-gray-100 border border-gray-100">
@@ -109,14 +134,51 @@ const Dashboard = () => {
                       {cell.render('Cell')}
                     </td>
                   ))}
-                  
                 </tr>
               );
             })}
           </tbody>
         </table>
+                {/* Pagination Controls */}
+        <div className="flex float-end gap-4 my-4 ">
+        <div className="p-2">
+            Page {startRow} to {endRow} of {data.length} Users
+          </div>
+          <div>
+            <button 
+              onClick={() => gotoPage(0)} 
+              disabled={!canPreviousPage} 
+              className={`p-1 border border-gray-300 rounded mr-2  ${!canPreviousPage ? 'bg-gray-200' : 'bg-white'}`}
+            >
+              {'First'}
+            </button>
+            <button 
+              onClick={() => previousPage()} 
+              disabled={!canPreviousPage} 
+              className={`p-1 border border-gray-300 rounded ${!canPreviousPage ? 'bg-gray-200' : 'bg-white'}`}
+            >
+              {'Previous'}
+            </button>
+          </div>
+          <div>
+            <button 
+              onClick={() => nextPage()} 
+              disabled={!canNextPage} 
+              className={`p-1 border border-gray-300 rounded mr-2 ${!canNextPage ? 'bg-gray-200' : 'bg-white'}`}
+            >
+              {'Next'}
+            </button>
+            <button 
+              onClick={() => gotoPage(pageCount - 1)} 
+              disabled={!canNextPage} 
+              className={`p-1 border border-gray-300 rounded ${!canNextPage ? 'bg-gray-200' : 'bg-white'}`}
+            >
+              {'Last'}
+            </button>
+          </div>
+        </div>
       </div>
-
+      </div>
     </>
   );
 };
