@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import { logout } from '../utils/logout';
 import Spinner from '../components/Spinner';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -82,7 +83,11 @@ const Dashboard = () => {
       {isError && (
           <div>Session Expire, Please Login Again</div>
       )}
+      
       <div className='container mx-auto w-9/12'>
+      <div className="mt-10 p-10 bg-gray-300 rounded-sm border-none shadow-lg mb-3">
+      <Link to={"/admin/createUser"} className='bg-[#454545] p-3 text-white rounded-sm hover:bg-black'>Create User</Link>
+      </div>
         <div className=" my-4 shadow-lg ">
           <div>
             <select
@@ -90,10 +95,10 @@ const Dashboard = () => {
               onChange={e => {
                 setPageSize(Number(e.target.value));
               }}
-              className="p-1 border border-gray-300 rounded"
+              className="p-2 border-none bg-[#454545] text-white rounded-sm "
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
-                <option key={pageSize} value={pageSize}>
+                <option key={pageSize} value={pageSize} className='bg-[#454545] text-white'>
                   Show {pageSize}
                 </option>
               ))}

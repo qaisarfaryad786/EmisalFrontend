@@ -5,6 +5,7 @@ import ErrorPage from '../Pages/ErrorPage/ErrorPage';
 import Dashboard from '../Pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
 import Home from '../Pages/home/Home';
+import CreateUser from '../Pages/CreateUser';
 
 export const router = createBrowserRouter([
     {
@@ -14,6 +15,14 @@ export const router = createBrowserRouter([
                 <Dashboard />
             </ProtectedRoute>
         ),
+    },
+    {
+        path:"/admin/createUser",
+        element: (
+            <ProtectedRoute role="admin">
+                <CreateUser />
+            </ProtectedRoute>
+        )
     },
     {
         path: "/adminLogin",
