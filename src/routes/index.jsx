@@ -4,8 +4,9 @@ import UserLogin from '../Pages/User/UserLogin';
 import ErrorPage from '../Pages/ErrorPage/ErrorPage';
 import Dashboard from '../Pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
-import Home from '../Pages/home/Home';
+import Home from '../Pages/Home/Home';
 import CreateUser from '../Pages/CreateUser';
+import AddNewFir from '../Pages/AddNewFir';
 
 export const router = createBrowserRouter([
     {
@@ -37,6 +38,14 @@ export const router = createBrowserRouter([
         element: (
             <ProtectedRoute role="user">
                 <Home />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/addNewFir",
+        element: (
+            <ProtectedRoute role="user">
+                <AddNewFir />
             </ProtectedRoute>
         ),
     },

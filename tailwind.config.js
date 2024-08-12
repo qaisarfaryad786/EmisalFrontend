@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {},
+    fontFamily:{
+      urdufont:["Noto Nastaliq Urdu"],
+    }
   },
   plugins: [],
 }

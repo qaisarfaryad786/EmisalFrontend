@@ -76,6 +76,7 @@ const CreateUser = () => {
             placeholder='Name'
             onChange={handleOnChange}
             value={formData.names}
+            required
             className="shadow appearance-none border bg-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />
           <label htmlFor="username">Username</label>
@@ -85,6 +86,7 @@ const CreateUser = () => {
             placeholder='Username'
             onChange={handleOnChange}
             value={formData.username}
+            required
             className="shadow appearance-none border bg-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />
           <label htmlFor="password">Password</label>
@@ -94,6 +96,7 @@ const CreateUser = () => {
             placeholder='Password'
             onChange={handleOnChange}
             value={formData.password}
+            required
             className="shadow appearance-none border bg-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />
           <label htmlFor="role">Role</label>
@@ -101,6 +104,7 @@ const CreateUser = () => {
             name="role"
             onChange={handleOnChange}
             value={formData.role}
+            required
             className="shadow border bg-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight"
           >
             <option value="user">User</option>
@@ -111,6 +115,7 @@ const CreateUser = () => {
             name="isActive"
             onChange={handleOnChange}
             value={formData.isActive ? 'true' : 'false'}
+            required
             className="shadow border bg-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight"
           >
             <option value="true">True</option>

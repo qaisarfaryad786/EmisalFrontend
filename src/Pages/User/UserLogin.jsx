@@ -25,7 +25,7 @@ const UserLogin = () => {
       setFormData({ username: '', password: '' });
     }
 
-    if (isSuccess || user) {
+    if (isSuccess) {
       navigate('/home'); // Adjust the path as needed
     }
 
